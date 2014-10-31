@@ -16,11 +16,6 @@
 #define SDC_DEBUG_PRINTLN(text)
 #endif
 
-// If there is no MIN function, define one.
-#ifndef MIN
-#define MIN( a, b ) ( ((a) < (b)) ? (a) : (b) )
-#endif
-
 // The pin and port for the chip select of the SD-Card.
 #define SDCARD_CSPINNUM 10
 #define SDCARD_CSPORT PORTB 
@@ -454,7 +449,7 @@ initFail:
 				break;
 			}
 		case ReadStateReadData:
-			bytesToRead = MIN(blockSize - blockByteCount, *byteCount);
+			bytesToRead = min(blockSize - blockByteCount, *byteCount);
 			for (uint16_t i = 0; i < bytesToRead; ++i) {
 				buffer[i] = spiReceive();
 			}
