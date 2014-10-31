@@ -7,8 +7,8 @@
 //
 //
 // I developed this library to allow perfectly timed audio output, which
-// requires that the data from the SD Card is loaded in the timed interrupt
-// which plays the samples.
+// requires that the data from the SD card is loaded in small chunks to 
+// create the right timing when playing the samples.
 //
 // This library assumes the chip select for the SD-Card is on Pin 10.
 // The library is tested with the AdaFruit Data Logging Shield.
