@@ -28,7 +28,7 @@ bool AudioPlayer::initialize()
 	dacPort.shutdown();
 	
 	// Initialize the SDCard	
-	SDCard::Status status = sdCard.initialize(0);	
+	SDCard::Status status = sdCard.initialize();	
 	if (status != SDCard::StatusReady) {
 #ifdef AUDIOPLAYER_DEBUG
 		Serial.println(String(F("SD Card Init Failure, error="))+String(sdCard.error()));

@@ -92,10 +92,6 @@ struct SDCardState {
 	const uint8_t R1_ReadyState = 0x00; ///< The ready state.
 	const uint8_t BlockDataStart = 0xfe; ///< Byte to indicate the block data will start.
 
-	/// The mode flags
-	///
-	uint8_t modeFlags = 0;
-
 	/// The last error
 	///
 	SDCard::Error error = SDCard::NoError;
@@ -270,11 +266,8 @@ struct SDCardState {
 
 	/// Initialize the SD Card
 	///
-	inline SDCard::Status initialize(uint8_t mode)
+	inline SDCard::Status initialize()
 	{
-		// The mode flags
-		modeFlags = mode;
-	
 		// Keep the start time to detect time-outs.
 		uint16_t startTime = static_cast<uint16_t>(millis());
 		uint32_t argument = 0;
@@ -668,9 +661,9 @@ SDCardState sdCardState;
 SDCard sdCard;
 	
 
-SDCard::Status SDCard::initialize(uint8_t mode)
+SDCard::Status SDCard::initialize()
 {	
-	return sdCardState.initialize(mode);
+	return sdCardState.initialize();
 }
 
 

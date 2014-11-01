@@ -37,13 +37,6 @@ namespace lr {
 class SDCard
 {
 public:
-	/// The mode of operation.
-	///
-	enum ModeFlags : uint8_t {
-		/// Use SPI transactions.
-		TransactionMode = 0x01, 
-	};
-
 	/// Errors
 	///
 	enum Error : uint8_t {
@@ -82,7 +75,7 @@ public:
 	///
 	/// @return StatusReady on succes, StatusError on any error.
 	///
-	Status initialize(uint8_t mode = 0);
+	Status initialize();
 
 	/// Read the SD Card Directory in HCDI format
 	///
