@@ -21,20 +21,20 @@
 // To change the pins for the output, you have to lookup the correct
 // ports and pins in the schema for your Arduino board.
 
+// Chip Select: Pin 2
 #define DAC_CS_PORT PORTD
-#define DAC_CS_DDR DDRD
 #define DAC_CS PIND2
 
+// Clock: Pin 3
 #define DAC_CLK_PORT PORTD
-#define DAC_CLK_DDR DDRD
 #define DAC_CLK PIND3
 
+// Data In: Pin 4
 #define DAC_DI_PORT PORTD
-#define DAC_DI_DDR DDRD
 #define DAC_DI PIND4
 
+// Latch: Pin 5
 #define DAC_LATCH_PORT PORTD
-#define DAC_LATCH_DDR DDRD
 #define DAC_LATCH PIND5
 
 // This are helper macros to create the actions from the ports and pins above.
