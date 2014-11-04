@@ -164,7 +164,7 @@ bool AudioPlayer::play(uint32_t startBlock, uint32_t sampleCount)
 		const uint16_t currentReadPos = (currentSample & sampleBufferMask);
 		const uint16_t currentWritePos = (currentReadPos + bufferedSamples) & sampleBufferMask;
 		// Only write if there is space, and never at the end of the buffer.
-		if (bufferedSamples < (bufferSize - 4) /*&& currentWritePos <= (bufferSize - 4)*/) {
+		if (bufferedSamples < (bufferSize - 4)) {
 			// try to read
 			uint8_t* const writePointer =
 				reinterpret_cast<uint8_t*>(&sampleBuffer[currentWritePos]);
