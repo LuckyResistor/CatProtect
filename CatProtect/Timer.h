@@ -49,7 +49,6 @@ public:
 		if (!_enabled) {
 			return false;
 		}
-		bool timerFired = false;
 		const unsigned long delta = currentTime - _start;
 		if (delta >= _delay) {
 			_start = currentTime;
