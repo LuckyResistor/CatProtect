@@ -132,10 +132,14 @@ bool AudioPlayer::play(uint32_t startBlock, uint32_t sampleCount)
 	uint16_t bufferedSamples = 0x100;
 	// The DAC value, used for fade out.
 	uint16_t dacValue;
-	
-	// Enable the DAC in "middle" position. (TODO: fade in).
-	dacPort.setValue(0x0800);
-	
+		
+	// Fade in
+	for (uint16_t v = 0; v < 0x0800; v += 0x10) {
+		dacPort.setValue(v);
+		dacPort.pushValue();
+		delayMicroseconds(100);
+	}
+		
 	// Main loop, until sample count reached.
 	for (;;) {
 
@@ -171,15 +175,18 @@ bool AudioPlayer::play(uint32_t startBlock, uint32_t sampleCount)
 			status = sdCard.readFast4(writePointer);
 			if (status == SDCard::StatusError) {
 				goto readError;
-			} else if (status != SDCard::StatusWait) {
+			} else if (status == SDCard::StatusReady) {
 				bufferedSamples += 2; // (4 bytes)
 			}
 		}
 	}
-	
-	// Keep it in the middle position.
-	dacPort.setValue(0x800);
-	dacPort.pushValue();
+
+	// Fade out
+	for (uint16_t v = 0x800; v > 0; v -= 0x10) {
+		dacPort.setValue(v);
+		dacPort.pushValue();
+		delayMicroseconds(100);
+	}
 	
 	// Stop the timer.
 	TCCR1B &= ~(_BV(CS10)|_BV(CS11)|_BV(CS12));          
