@@ -147,27 +147,30 @@ if ($outFile->tell > $confBlockSize) {
 	die("Header is too large. Header is " . $outFile->getpos . ", but block size is " . $confBlockSize);
 }
 
-# Fill with zero
-while ($outFile->tell < $confBlockSize) {
-	$outFile->print(pack("x"));
-}
-
 # Copy all files.
 foreach my $fileEntry (@files) {
 	my $fileName = $fileEntry->{"name"};
+	my $startBlock = $fileEntry->{"startBlock"};
 	my $filePath = File::Spec->catfile($optInputDirectory, $fileName);
-	print "Writing file $fileName ...\n";
+	my $startPosition = $startBlock * $confBlockSize;
+	# Fill with padding up to the expected block
+	while (($outFile->tell < $startPosition) != 0) {
+		$outFile->print(pack("x"));
+	}
+	# Now write the file.
+	print "Writing file $fileName ... position=" . $outFile->tell . ", block=" . ($outFile->tell / 512.0) . "\n";
 	my $inFile = IO::File->new($filePath, "<:raw")
 		or die("Could not open input file $fileName for reading.");
 	my $buffer;
 	while ($inFile->read($buffer, 4096) > 0) {
 		$outFile->write($buffer);
 	};
-	# fill with padding bytes
-	while (($outFile->tell % $confBlockSize) != 0) {
-		$outFile->print(pack("x"));
-	}
 	$inFile->close();	
+}
+
+# fill with padding bytes to complete the last block
+while (($outFile->tell % $confBlockSize) != 0) {
+	$outFile->print(pack("x"));
 }
 
 $outFile->close();
