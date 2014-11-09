@@ -41,6 +41,29 @@ LEDController ledController;
 MotionSensor motionSensor;
 
 
+/// A list of voice sample file names
+const char* const voiceSampleList[] = {
+	"v0.snd",
+	"v1.snd",
+	"v2.snd",
+	"v3.snd",
+	"v4.snd",
+	"v5.snd" };
+
+/// The number of voice samples
+const int voiceSampleCount = 6;
+
+/// The next voice sample to play.
+/// They play in a loop.
+int nextVoiceSampleIndex = 0;
+
+/// Flag if we had an alarm.
+/// The LED will flash red, after an alarm was played.
+bool alarmPlayed = false;
+
+
+/// Arduino setup method.
+///
 void setup() {
 	// Set the initial state.
 	logicState = WaitForSensor;
@@ -63,12 +86,14 @@ void setup() {
 		signalError();
 		return;
 	}
-	
+		
 	Serial.println(F("Success!"));
 	Serial.flush();
 }
 
 
+/// Arduino loop method.
+///
 void loop() {
 	// Get the current time for this loop iteration.
 	const unsigned long currentTime = millis();
@@ -81,19 +106,33 @@ void loop() {
 		// If the board goes into alarm state, play the sound.
 		// This will block the loop, until the sound finishes.
 		if (logicState == AlarmState) {
-			if (!audioPlayer.play("voice.snd")) {
+			// Get the filename for the next voice sample.
+			const char *fileName = voiceSampleList[nextVoiceSampleIndex];
+			// Play the sound.
+			if (!audioPlayer.play(fileName)) {
+				// On error go into error state.
 				Serial.println(F("Error on play."));
 				Serial.flush();
-				return;
+				signalError();
+			} else {
+				// Increase the next voice sample index
+				++nextVoiceSampleIndex;
+				if (nextVoiceSampleIndex >= voiceSampleCount) {
+					nextVoiceSampleIndex = 0;
+				}
+				// Go back into idle state after the sound.
+				// The sensor might stay in alarm state for a while.
+				logicState = IdleState;
+				// Remember an alarm was played, the LED will flash red.
+				alarmPlayed = true;
 			}
-			// Go back into idle state after the sound.
-			// The sensor might stay in alarm state for a while.
-			logicState = IdleState;
 		}
 	}
 }
 
 
+/// The motion callback which is called every time when the sensor state changes.
+///
 void onMotion(const unsigned long currentTime, MotionSensor::Status status)
 {
 	if (status == MotionSensor::WaitStablilize) {
@@ -103,7 +142,12 @@ void onMotion(const unsigned long currentTime, MotionSensor::Status status)
 	} else if (status == MotionSensor::Idle) {
 		Serial.println(F("Sensor is in idle state."));
 		Serial.flush();
-		ledController.setState(LEDController::Green, LEDController::FlashVerySlow);
+		// If an alarm was played, let the LED flash red.
+		if (alarmPlayed) {
+			ledController.setState(LEDController::Red, LEDController::FlashVerySlow);
+		} else { 
+			ledController.setState(LEDController::Green, LEDController::FlashVerySlow);
+		}
 		logicState = IdleState; // Ready to observe.
 	} else if (status == MotionSensor::Alarm) {
 		Serial.println(F("Sensor alarm."));
