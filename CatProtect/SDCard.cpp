@@ -63,7 +63,7 @@ struct SDCardState {
 		Cmd_SetBlockLenght       = 16 | Response1, ///< Set the block length
 		Cmd_ReadSingleBlock      = 17 | Response1, ///< Read one block.
 		Cmd_ReadMultiBlock       = 18 | Response1, ///< Read multiple blocks.
-		Cmd_ApplicationCommand   = 37 | Response1, ///< Escape for application specific command.
+		Cmd_ApplicationCommand   = 55 | Response1, ///< Escape for application specific command.
 		Cmd_ReadOCR              = 58 | Response3, ///< Retrieve the OCR register.
 		ACmd_Flag                = 0x100, ///< The flag for app commands.
 		ACmd_SendOpCond          = 41 | ACmd_Flag | Response1, ///< Sends host capacity support information and activates the card's initialization process. 
@@ -212,7 +212,7 @@ struct SDCardState {
 		// Check if this is an app command
 		if ((command & ACmd_Flag) != 0) {
 			// For app commands, send a command 55 first.
-			spiSend(55 | 0x40);
+			spiSend(Cmd_ApplicationCommand | 0x40);
 			spiSend(0);
 			spiSend(0);
 			spiSend(0);
